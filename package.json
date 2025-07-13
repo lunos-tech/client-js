@@ -1,15 +1,37 @@
 {
    "name": "@lunos/client",
    "version": "1.0.0",
-   "description": "Official client for Lunos API",
+   "description": "Official TypeScript client library for Lunos AI API - A comprehensive AI proxy service supporting chat completions, image generation, audio synthesis, embeddings, and more.",
    "main": "./dist/index.js",
    "module": "./dist/index.mjs",
+   "types": "./dist/index.d.ts",
+   "exports": {
+      ".": {
+         "types": "./dist/index.d.ts",
+         "import": "./dist/index.mjs",
+         "require": "./dist/index.js"
+      }
+   },
+   "files": [
+      "dist",
+      "README.md",
+      "LICENSE"
+   ],
    "homepage": "https://lunos.tech/docs",
    "repository": {
+      "type": "git",
       "url": "https://github.com/lunos-tech/client-js"
    },
    "scripts": {
-      "build": "tsup"
+      "build": "tsup",
+      "dev": "tsup --watch",
+      "clean": "rm -rf dist",
+      "prepublishOnly": "npm run clean && npm run build",
+      "test": "jest",
+      "test:watch": "jest --watch",
+      "lint": "eslint src --ext .ts",
+      "lint:fix": "eslint src --ext .ts --fix",
+      "type-check": "tsc --noEmit"
    },
    "keywords": [
       "AI",
@@ -23,12 +45,34 @@
       "Gemini",
       "Lunos",
       "machine learning",
-      "generative AI"
+      "generative AI",
+      "chat completions",
+      "image generation",
+      "text-to-speech",
+      "embeddings",
+      "typescript",
+      "api client"
    ],
    "author": "superXdev",
    "license": "MIT",
    "devDependencies": {
+      "@types/node": "^24.0.13",
       "tsup": "^8.5.0",
-      "typescript": "^5.8.3"
+      "typescript": "^5.8.3",
+      "@types/jest": "^29.5.0",
+      "jest": "^29.5.0",
+      "ts-jest": "^29.1.0",
+      "eslint": "^8.0.0",
+      "@typescript-eslint/eslint-plugin": "^6.0.0",
+      "@typescript-eslint/parser": "^6.0.0"
+   },
+   "peerDependencies": {
+      "typescript": ">=4.9.0"
+   },
+   "engines": {
+      "node": ">=16.0.0"
+   },
+   "publishConfig": {
+      "access": "public"
    }
 }
