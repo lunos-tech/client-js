@@ -19,12 +19,19 @@ export class ChatService extends BaseService {
       this.log("Creating chat completion", {
          model: request.model,
          messages: request.messages.length,
+         fallback_model: request.fallback_model,
       });
 
-      return this.makeRequest<ChatCompletionResponse>("/v1/chat/completions", {
-         method: "POST",
-         body: JSON.stringify(request),
-      });
+      return this.makeRequest<ChatCompletionResponse>(
+         "/v1/chat/completions",
+         {
+            method: "POST",
+            body: JSON.stringify(request),
+         },
+         {
+            fallback_model: request.fallback_model,
+         }
+      );
    }
 
    /**
@@ -37,13 +44,20 @@ export class ChatService extends BaseService {
       this.log("Creating streaming chat completion", {
          model: request.model,
          messages: request.messages.length,
+         fallback_model: request.fallback_model,
       });
 
       const streamRequest = { ...request, stream: true };
-      return this.makeStreamRequest("/v1/chat/completions", {
-         method: "POST",
-         body: JSON.stringify(streamRequest),
-      });
+      return this.makeStreamRequest(
+         "/v1/chat/completions",
+         {
+            method: "POST",
+            body: JSON.stringify(streamRequest),
+         },
+         {
+            fallback_model: request.fallback_model,
+         }
+      );
    }
 
    /**

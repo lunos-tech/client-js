@@ -32,6 +32,7 @@ export class LunosClient {
          this.config.retries,
          this.config.retryDelay
       );
+      ValidationUtils.validateFallbackModel(this.config.fallback_model);
    }
 
    /**
@@ -150,6 +151,13 @@ export class LunosClient {
     */
    withRetryConfig(retries: number, retryDelay: number): LunosClient {
       return new LunosClient({ ...this.config, retries, retryDelay });
+   }
+
+   /**
+    * Creates a new client instance with fallback model configuration
+    */
+   withFallbackModel(fallbackModel: string): LunosClient {
+      return new LunosClient({ ...this.config, fallback_model: fallbackModel });
    }
 
    /**

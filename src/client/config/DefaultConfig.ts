@@ -6,6 +6,7 @@ export const DEFAULT_CONFIG: LunosConfig = {
    timeout: 30000,
    retries: 3,
    retryDelay: 1000,
+   fallback_model: undefined,
    debug: false,
 };
 

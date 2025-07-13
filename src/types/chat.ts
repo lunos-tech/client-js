@@ -64,6 +64,8 @@ export interface ChatCompletionRequest extends BaseRequest {
    };
    /** Seed for reproducible results */
    seed?: number;
+   /** Fallback model to use when primary model fails after retries */
+   fallback_model?: string;
    /** Tools available to the model */
    tools?: Array<{
       /** Tool type */

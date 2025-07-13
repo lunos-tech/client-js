@@ -66,6 +66,7 @@ const config: Partial<LunosConfig> = {
    timeout: 30000,
    retries: 3,
    retryDelay: 1000,
+   fallback_model: "openai/gpt-3.5-turbo", // Optional fallback model
    debug: false,
    headers: {
       "Custom-Header": "value",
@@ -151,6 +152,44 @@ const response = await client.chat.chatWithSystem(
    "openai/gpt-4"
 );
 ```
+
+### Fallback Model Support
+
+The client supports automatic fallback to alternative models when the primary model fails after retries. This is useful for ensuring high availability and graceful degradation.
+
+```typescript
+// Per-request fallback model
+const response = await client.chat.createCompletion({
+   model: "openai/gpt-4-turbo", // Primary model
+   fallback_model: "openai/gpt-3.5-turbo", // Fallback model
+   messages: [{ role: "user", content: "Explain quantum computing." }],
+   temperature: 0.5,
+   max_tokens: 300,
+});
+
+// Client-level fallback model configuration
+const clientWithFallback = client.withFallbackModel("openai/gpt-3.5-turbo");
+
+const response = await clientWithFallback.chat.createCompletion({
+   model: "openai/gpt-4-turbo", // Will fallback to gpt-3.5-turbo if needed
+   messages: [{ role: "user", content: "What is machine learning?" }],
+});
+
+// Streaming with fallback model
+const stream = await client.chat.createCompletionStream({
+   model: "openai/gpt-4-turbo",
+   fallback_model: "openai/gpt-3.5-turbo",
+   messages: [{ role: "user", content: "Write a story." }],
+   stream: true,
+});
+```
+
+**How it works:**
+
+-  When a model-related error occurs after all retry attempts, the client automatically tries the fallback model
+-  Fallback is triggered for errors containing keywords like "model not found", "model unavailable", etc.
+-  Debug mode will log when fallback models are used
+-  Both regular and streaming requests support fallback models
 
 ### Image Generation
 
@@ -357,6 +396,7 @@ const timeoutClient = client.withTimeout(60000);
 const customHeadersClient = client.withHeaders({
    "X-Custom-Header": "value",
 });
+const fallbackClient = client.withFallbackModel("openai/gpt-3.5-turbo");
 
 // Update configuration
 client.updateConfig({
@@ -473,6 +513,22 @@ MIT License - see [LICENSE](LICENSE) for details.
 -  Email: support@lunos.tech
 
 ## Changelog
+
+### 1.2.0
+
+-  Added fallback model support for automatic model switching on errors
+-  Added `fallback_model` parameter to chat completion requests
+-  Added `withFallbackModel()` method to client configuration
+-  Enhanced error handling with model-specific fallback logic
+-  Added validation for fallback model configuration
+-  Updated documentation with fallback model examples
+
+### 1.1.0
+
+-  Enhanced error handling and retry logic
+-  Improved TypeScript type definitions
+-  Added comprehensive validation utilities
+-  Updated dependencies and build configuration
 
 ### 1.0.0
 

@@ -9,6 +9,8 @@ export interface LunosConfig {
    retries: number;
    /** Delay between retries in milliseconds */
    retryDelay: number;
+   /** Fallback model to use when primary model fails after retries */
+   fallback_model?: string;
    /** Custom headers to include in all requests */
    headers?: Record<string, string>;
    /** Whether to enable debug logging */
@@ -26,4 +28,6 @@ export interface RequestOptions {
    retry?: boolean;
    /** Signal for request cancellation */
    signal?: AbortSignal;
+   /** Fallback model for this specific request */
+   fallback_model?: string;
 }

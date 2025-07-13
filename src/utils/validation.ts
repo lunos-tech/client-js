@@ -283,4 +283,20 @@ export class ValidationUtils {
          );
       }
    }
+
+   /**
+    * Validates fallback model configuration
+    */
+   static validateFallbackModel(fallbackModel?: string): void {
+      if (fallbackModel !== undefined) {
+         if (
+            typeof fallbackModel !== "string" ||
+            fallbackModel.trim().length === 0
+         ) {
+            throw new ValidationError(
+               "Fallback model must be a non-empty string"
+            );
+         }
+      }
+   }
 }

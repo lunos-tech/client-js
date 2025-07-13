@@ -43,6 +43,75 @@ async function main() {
          }
       );
 
+      // Chat completion with streaming
+      console.log("\n📝 Chat completion with streaming:");
+      let fullResponse = "";
+      const stream = await client.chat.createCompletionWithStream(
+         {
+            model: "openai/gpt-4",
+            messages: [
+               { role: "user", content: "Write a short poem about AI." },
+            ],
+            temperature: 0.7,
+            max_tokens: 200,
+         },
+         (chunk) => {
+            fullResponse += chunk;
+            process.stdout.write(chunk);
+         }
+      );
+      console.log("\n✅ Streaming completed!");
+
+      // Chat completion with fallback model
+      console.log("\n🔄 Chat completion with fallback model:");
+      try {
+         const responseWithFallback = await client.chat.createCompletion({
+            model: "openai/gpt-4-turbo", // Primary model
+            fallback_model: "openai/gpt-3.5-turbo", // Fallback model
+            messages: [
+               {
+                  role: "user",
+                  content: "Explain quantum computing in simple terms.",
+               },
+            ],
+            temperature: 0.5,
+            max_tokens: 300,
+         });
+         console.log(
+            "✅ Response with fallback:",
+            responseWithFallback.choices[0].message.content.substring(0, 100) +
+               "..."
+         );
+      } catch (error) {
+         console.error("❌ Error with fallback:", error);
+      }
+
+      // Client with global fallback model configuration
+      console.log("\n⚙️ Client with global fallback model:");
+      const clientWithFallback = client.withFallbackModel(
+         "openai/gpt-3.5-turbo"
+      );
+      try {
+         const responseWithGlobalFallback =
+            await clientWithFallback.chat.createCompletion({
+               model: "openai/gpt-4-turbo", // Primary model
+               messages: [
+                  { role: "user", content: "What is machine learning?" },
+               ],
+               temperature: 0.3,
+               max_tokens: 200,
+            });
+         console.log(
+            "✅ Response with global fallback:",
+            responseWithGlobalFallback.choices[0].message.content.substring(
+               0,
+               100
+            ) + "..."
+         );
+      } catch (error) {
+         console.error("❌ Error with global fallback:", error);
+      }
+
       // Image generation
       // console.log("4. Image Generation");
       // const imageResponse = await client.image.generate(

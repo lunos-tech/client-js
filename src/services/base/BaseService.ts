@@ -50,7 +50,12 @@ export abstract class BaseService {
          retryStatusCodes: [408, 429, 500, 502, 503, 504],
       };
 
-      return this.makeRequestWithRetry<T>(url, requestOptions_, retryConfig);
+      return this.makeRequestWithRetry<T>(
+         url,
+         requestOptions_,
+         retryConfig,
+         requestOptions.fallback_model || this.config.fallback_model
+      );
    }
 
    /**
@@ -89,6 +94,17 @@ export abstract class BaseService {
 
          return response.body;
       } catch (error) {
+         // If we have a fallback model and this is a model-related error, try with fallback
+         const fallbackModel =
+            requestOptions.fallback_model || this.config.fallback_model;
+         if (fallbackModel && this.shouldTryFallback(error)) {
+            return this.tryStreamWithFallbackModel(
+               url,
+               requestOptions_,
+               fallbackModel
+            );
+         }
+
          if (error instanceof LunosError) {
             throw error;
          }
@@ -106,7 +122,8 @@ export abstract class BaseService {
    private async makeRequestWithRetry<T>(
       url: string,
       options: RequestInit,
-      retryConfig: RetryConfig
+      retryConfig: RetryConfig,
+      fallbackModel?: string
    ): Promise<T> {
       let lastError: Error;
 
@@ -133,6 +150,14 @@ export abstract class BaseService {
 
             // Check if we should retry
             if (attempt === retryConfig.maxRetries) {
+               // If we have a fallback model and this is a model-related error, try with fallback
+               if (fallbackModel && this.shouldTryFallback(error)) {
+                  return this.tryWithFallbackModel<T>(
+                     url,
+                     options,
+                     fallbackModel
+                  );
+               }
                throw lastError;
             }
 
@@ -234,6 +259,135 @@ export abstract class BaseService {
     */
    private sleep(ms: number): Promise<void> {
       return new Promise((resolve) => setTimeout(resolve, ms));
+   }
+
+   /**
+    * Determines if an error should trigger fallback model usage
+    */
+   private shouldTryFallback(error: Error): boolean {
+      // Try fallback for model-related errors
+      const modelErrorKeywords = [
+         "model",
+         "model not found",
+         "model unavailable",
+         "model error",
+         "invalid model",
+         "model not available",
+         "model temporarily unavailable",
+      ];
+
+      const errorMessage = error.message.toLowerCase();
+      return modelErrorKeywords.some((keyword) =>
+         errorMessage.includes(keyword)
+      );
+   }
+
+   /**
+    * Attempts the request with a fallback model
+    */
+   private async tryWithFallbackModel<T>(
+      url: string,
+      options: RequestInit,
+      fallbackModel: string
+   ): Promise<T> {
+      if (this.config.debug) {
+         console.warn(`Trying with fallback model: ${fallbackModel}`);
+      }
+
+      try {
+         // Parse the request body to update the model
+         const body = JSON.parse(options.body as string);
+         const originalModel = body.model;
+
+         // Update the model to fallback model
+         body.model = fallbackModel;
+
+         // Create new options with updated body
+         const fallbackOptions: RequestInit = {
+            ...options,
+            body: JSON.stringify(body),
+         };
+
+         const response = await this.fetchImpl(url, fallbackOptions);
+
+         if (!response.ok) {
+            await this.handleErrorResponse(response);
+         }
+
+         const result = await response.json();
+
+         if (this.config.debug) {
+            console.warn(
+               `Successfully used fallback model: ${fallbackModel} (original: ${originalModel})`
+            );
+         }
+
+         return result;
+      } catch (error) {
+         if (this.config.debug) {
+            console.error(
+               `Fallback model ${fallbackModel} also failed:`,
+               error
+            );
+         }
+         throw error;
+      }
+   }
+
+   /**
+    * Attempts the streaming request with a fallback model
+    */
+   private async tryStreamWithFallbackModel(
+      url: string,
+      options: RequestInit,
+      fallbackModel: string
+   ): Promise<ReadableStream<Uint8Array>> {
+      if (this.config.debug) {
+         console.warn(
+            `Trying with fallback model for streaming: ${fallbackModel}`
+         );
+      }
+
+      try {
+         // Parse the request body to update the model
+         const body = JSON.parse(options.body as string);
+         const originalModel = body.model;
+
+         // Update the model to fallback model
+         body.model = fallbackModel;
+
+         // Create new options with updated body
+         const fallbackOptions: RequestInit = {
+            ...options,
+            body: JSON.stringify(body),
+         };
+
+         const response = await this.fetchImpl(url, fallbackOptions);
+
+         if (!response.ok) {
+            await this.handleErrorResponse(response);
+         }
+
+         if (!response.body) {
+            throw new LunosError("No response body for streaming request", 0);
+         }
+
+         if (this.config.debug) {
+            console.warn(
+               `Successfully used fallback model for streaming: ${fallbackModel} (original: ${originalModel})`
+            );
+         }
+
+         return response.body;
+      } catch (error) {
+         if (this.config.debug) {
+            console.error(
+               `Fallback model ${fallbackModel} also failed for streaming:`,
+               error
+            );
+         }
+         throw error;
+      }
    }
 
    /**
