@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40lunos%2Fclient.svg)](https://badge.fury.io/js/%40lunos%2Fclient)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm downloads](https://img.shields.io/npm/dm/@lunos/client.svg)](https://www.npmjs.com/package/@lunos/client)
 
 Official TypeScript client library for the [Lunos AI API](https://lunos.tech) - A comprehensive AI proxy service supporting multiple AI providers including OpenAI, Anthropic, Google, and more.
 
@@ -46,7 +47,7 @@ const client = new LunosClient({
 
 // Chat completion
 const response = await client.chat.createCompletion({
-   model: "openai/gpt-4",
+   model: "openai/gpt-4.1",
    messages: [{ role: "user", content: "Hello, how are you?" }],
 });
 
@@ -66,7 +67,7 @@ const config: Partial<LunosConfig> = {
    timeout: 30000,
    retries: 3,
    retryDelay: 1000,
-   fallback_model: "openai/gpt-3.5-turbo", // Optional fallback model
+   fallback_model: "openai/gpt-4o", // Optional fallback model
    debug: false,
    headers: {
       "Custom-Header": "value",
@@ -81,7 +82,7 @@ const client = new LunosClient(config);
 ```typescript
 // Simple chat completion
 const response = await client.chat.createCompletion({
-   model: "openai/gpt-4",
+   model: "openai/gpt-4.1",
    messages: [{ role: "user", content: "Write a short story about a robot." }],
    temperature: 0.7,
    max_tokens: 500,
@@ -91,7 +92,7 @@ const response = await client.chat.createCompletion({
 let fullResponse = "";
 const stream = await client.chat.createCompletionWithStream(
    {
-      model: "openai/gpt-4",
+      model: "openai/gpt-4.1",
       messages: [{ role: "user", content: "Write a poem about AI." }],
    },
    (chunk) => {
@@ -102,7 +103,7 @@ const stream = await client.chat.createCompletionWithStream(
 
 // Streaming chat completion without callback (returns stream)
 const stream = await client.chat.createCompletionStream({
-   model: "openai/gpt-4",
+   model: "openai/gpt-4.1",
    messages: [{ role: "user", content: "Explain quantum computing." }],
 });
 
@@ -143,13 +144,13 @@ try {
 // Convenience methods
 const response = await client.chat.chatWithUser(
    "What is the capital of France?",
-   "openai/gpt-3.5-turbo"
+   "openai/gpt-4o"
 );
 
 const response = await client.chat.chatWithSystem(
    "You are a helpful assistant.",
    "What is 2+2?",
-   "openai/gpt-4"
+   "openai/gpt-4.1"
 );
 ```
 
@@ -161,24 +162,24 @@ The client supports automatic fallback to alternative models when the primary mo
 // Per-request fallback model
 const response = await client.chat.createCompletion({
    model: "openai/gpt-4-turbo", // Primary model
-   fallback_model: "openai/gpt-3.5-turbo", // Fallback model
+   fallback_model: "openai/gpt-4o", // Fallback model
    messages: [{ role: "user", content: "Explain quantum computing." }],
    temperature: 0.5,
    max_tokens: 300,
 });
 
 // Client-level fallback model configuration
-const clientWithFallback = client.withFallbackModel("openai/gpt-3.5-turbo");
+const clientWithFallback = client.withFallbackModel("openai/gpt-4o");
 
 const response = await clientWithFallback.chat.createCompletion({
-   model: "openai/gpt-4-turbo", // Will fallback to gpt-3.5-turbo if needed
+   model: "openai/gpt-4-turbo", // Will fallback to gpt-4o if needed
    messages: [{ role: "user", content: "What is machine learning?" }],
 });
 
 // Streaming with fallback model
 const stream = await client.chat.createCompletionStream({
    model: "openai/gpt-4-turbo",
-   fallback_model: "openai/gpt-3.5-turbo",
+   fallback_model: "openai/gpt-4o",
    messages: [{ role: "user", content: "Write a story." }],
    stream: true,
 });
@@ -319,11 +320,11 @@ const audioModels = await client.models.getAudioModels();
 const embeddingModels = await client.models.getEmbeddingModels();
 
 // Get specific model
-const gpt4 = await client.models.getModelById("openai/gpt-4");
+const gpt4 = await client.models.getModelById("openai/gpt-4.1");
 
 // Check model capabilities
 const supportsChat = await client.models.supportsCapability(
-   "openai/gpt-4",
+   "openai/gpt-4.1",
    "chat"
 );
 
@@ -338,7 +339,7 @@ import { LunosError, APIError, ValidationError } from "@lunos/client";
 
 try {
    const response = await client.chat.createCompletion({
-      model: "openai/gpt-4",
+      model: "openai/gpt-4.1",
       messages: [{ role: "user", content: "Hello" }],
    });
 } catch (error) {
@@ -359,7 +360,7 @@ import { StreamProcessor } from "@lunos/client";
 
 // Process streaming response
 const stream = await client.chat.createCompletionStream({
-   model: "openai/gpt-4",
+   model: "openai/gpt-4.1",
    messages: [{ role: "user", content: "Write a story." }],
 });
 
@@ -396,7 +397,7 @@ const timeoutClient = client.withTimeout(60000);
 const customHeadersClient = client.withHeaders({
    "X-Custom-Header": "value",
 });
-const fallbackClient = client.withFallbackModel("openai/gpt-3.5-turbo");
+const fallbackClient = client.withFallbackModel("openai/gpt-4o");
 
 // Update configuration
 client.updateConfig({
@@ -441,7 +442,7 @@ const controller = new AbortController();
 
 const response = await client.chat.createCompletion(
    {
-      model: "openai/gpt-4",
+      model: "openai/gpt-4.1",
       messages: [{ role: "user", content: "Hello" }],
    },
    {
