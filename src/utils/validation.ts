@@ -155,23 +155,75 @@ export class ValidationUtils {
          throw new ValidationError("Input text cannot exceed 4096 characters");
       }
 
-      if (
-         request.voice &&
-         !["alloy", "echo", "fable", "onyx", "nova", "shimmer"].includes(
-            request.voice
-         )
-      ) {
-         throw new ValidationError(
-            "Invalid voice. Must be one of: alloy, echo, fable, onyx, nova, shimmer"
-         );
+      if (request.voice) {
+         const openAIVoices = [
+            "alloy",
+            "echo",
+            "fable",
+            "onyx",
+            "nova",
+            "shimmer",
+         ];
+         const googleVoices = [
+            "Zephyr",
+            "Puck",
+            "Charon",
+            "Kore",
+            "Fenrir",
+            "Leda",
+            "Orus",
+            "Aoede",
+            "Callirrhoe",
+            "Autonoe",
+            "Enceladus",
+            "Iapetus",
+            "Umbriel",
+            "Algieba",
+            "Despina",
+            "Erinome",
+            "Algenib",
+            "Rasalgethi",
+            "Laomedeia",
+            "Achernar",
+            "Alnilam",
+            "Schedar",
+            "Gacrux",
+            "Pulcherrima",
+            "Achird",
+            "Zubenelgenubi",
+            "Vindemiatrix",
+            "Sadachbia",
+            "Sadaltager",
+            "Sulafat",
+         ];
+         const model = request.model || "";
+         if (model.startsWith("google")) {
+            if (!googleVoices.includes(request.voice)) {
+               throw new ValidationError(
+                  `Invalid voice for Google TTS. Must be one of: ${googleVoices.join(
+                     ", "
+                  )}`
+               );
+            }
+         } else {
+            if (!openAIVoices.includes(request.voice)) {
+               throw new ValidationError(
+                  `Invalid voice for OpenAI TTS. Must be one of: ${openAIVoices.join(
+                     ", "
+                  )}`
+               );
+            }
+         }
       }
 
       if (
          request.response_format &&
-         !["mp3", "opus", "aac", "flac"].includes(request.response_format)
+         !["mp3", "opus", "aac", "flac", "pcm", "wav", "linear16"].includes(
+            request.response_format
+         )
       ) {
          throw new ValidationError(
-            "Response format must be one of: mp3, opus, aac, flac"
+            "Response format must be one of: mp3, opus, aac, flac, pcm, wav, linear16"
          );
       }
 

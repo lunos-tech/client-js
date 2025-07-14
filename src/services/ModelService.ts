@@ -1,9 +1,26 @@
 import { BaseService } from "./base/BaseService";
-import { Model, ModelCapability, ModelCategory } from "../types/models";
+import { Model } from "../types/models";
 
+/**
+ * Service for handling model information and discovery operations.
+ * Provides methods to retrieve available models, filter by capabilities,
+ * and get detailed information about model specifications and pricing.
+ */
 export class ModelService extends BaseService {
    /**
-    * Gets all available models
+    * Gets all available models from the Lunos AI API.
+    *
+    * This method retrieves the complete list of available models,
+    * including their capabilities, pricing, and specifications.
+    *
+    * @returns Promise resolving to array of Model objects
+    * @throws Error if API call fails
+    *
+    * @example
+    * ```typescript
+    * const models = await client.models.getModels();
+    * console.log(`Available models: ${models.length}`);
+    * ```
     */
    async getModels(): Promise<Model[]> {
       this.log("Getting all models");
@@ -11,7 +28,22 @@ export class ModelService extends BaseService {
    }
 
    /**
-    * Gets a specific model by ID
+    * Gets a specific model by its unique identifier.
+    *
+    * This method searches through all available models to find
+    * one with the specified ID and returns its details.
+    *
+    * @param id - Unique identifier of the model to retrieve
+    * @returns Promise resolving to Model object or null if not found
+    * @throws Error if ID is not provided
+    *
+    * @example
+    * ```typescript
+    * const model = await client.models.getModelById("openai/gpt-4.1-mini");
+    * if (model) {
+    *   console.log("Model found:", model.id);
+    * }
+    * ```
     */
    async getModelById(id: string): Promise<Model | null> {
       if (!id || typeof id !== "string") {
@@ -24,7 +56,20 @@ export class ModelService extends BaseService {
    }
 
    /**
-    * Gets models by capability
+    * Gets models that support a specific capability.
+    *
+    * This method filters all available models to return only those
+    * that support the specified capability (e.g., "chat", "image-generation").
+    *
+    * @param capability - Capability to filter by (e.g., "chat", "embeddings")
+    * @returns Promise resolving to array of Model objects with the specified capability
+    * @throws Error if capability is not provided
+    *
+    * @example
+    * ```typescript
+    * const chatModels = await client.models.getModelsByCapability("chat");
+    * console.log(`Chat models available: ${chatModels.length}`);
+    * ```
     */
    async getModelsByCapability(capability: string): Promise<Model[]> {
       if (!capability || typeof capability !== "string") {
@@ -37,42 +82,110 @@ export class ModelService extends BaseService {
    }
 
    /**
-    * Gets chat models
+    * Gets all models that support chat completions.
+    *
+    * This convenience method returns models that can be used for
+    * conversational AI tasks and text generation.
+    *
+    * @returns Promise resolving to array of chat-capable Model objects
+    *
+    * @example
+    * ```typescript
+    * const chatModels = await client.models.getChatModels();
+    * console.log("Available chat models:", chatModels.map(m => m.id));
+    * ```
     */
    async getChatModels(): Promise<Model[]> {
-      return this.getModelsByCapability("chat");
+      return this.getModelsByCapability("text-generation");
    }
 
    /**
-    * Gets image generation models
+    * Gets all models that support image generation.
+    *
+    * This convenience method returns models that can be used for
+    * creating images from text prompts.
+    *
+    * @returns Promise resolving to array of image-generation-capable Model objects
+    *
+    * @example
+    * ```typescript
+    * const imageModels = await client.models.getImageModels();
+    * console.log("Available image models:", imageModels.map(m => m.id));
+    * ```
     */
    async getImageModels(): Promise<Model[]> {
       return this.getModelsByCapability("image-generation");
    }
 
    /**
-    * Gets audio generation models
+    * Gets all models that support text-to-speech generation.
+    *
+    * This convenience method returns models that can be used for
+    * converting text to spoken audio.
+    *
+    * @returns Promise resolving to array of text-to-speech-capable Model objects
+    *
+    * @example
+    * ```typescript
+    * const audioModels = await client.models.getAudioModels();
+    * console.log("Available audio models:", audioModels.map(m => m.id));
+    * ```
     */
    async getAudioModels(): Promise<Model[]> {
-      return this.getModelsByCapability("text-to-speech");
+      return this.getModelsByCapability("speech-generation");
    }
 
    /**
-    * Gets embedding models
+    * Gets all models that support text embeddings.
+    *
+    * This convenience method returns models that can be used for
+    * creating vector representations of text.
+    *
+    * @returns Promise resolving to array of embedding-capable Model objects
+    *
+    * @example
+    * ```typescript
+    * const embeddingModels = await client.models.getEmbeddingModels();
+    * console.log("Available embedding models:", embeddingModels.map(m => m.id));
+    * ```
     */
    async getEmbeddingModels(): Promise<Model[]> {
-      return this.getModelsByCapability("embeddings");
+      return this.getModelsByCapability("text-embedding");
    }
 
    /**
-    * Gets transcription models
+    * Gets all models that support audio transcription.
+    *
+    * This convenience method returns models that can be used for
+    * converting speech to text.
+    *
+    * @returns Promise resolving to array of transcription-capable Model objects
+    *
+    * @example
+    * ```typescript
+    * const transcriptionModels = await client.models.getTranscriptionModels();
+    * console.log("Available transcription models:", transcriptionModels.map(m => m.id));
+    * ```
     */
    async getTranscriptionModels(): Promise<Model[]> {
       return this.getModelsByCapability("audio-transcription");
    }
 
    /**
-    * Gets models by owner
+    * Gets models by their owner/organization.
+    *
+    * This method filters models by the organization or company that
+    * owns them (e.g., "openai", "anthropic").
+    *
+    * @param owner - Owner/organization name to filter by
+    * @returns Promise resolving to array of Model objects from the specified owner
+    * @throws Error if owner is not provided
+    *
+    * @example
+    * ```typescript
+    * const openaiModels = await client.models.getModelsByOwner("openai");
+    * console.log(`OpenAI models: ${openaiModels.length}`);
+    * ```
     */
    async getModelsByOwner(owner: string): Promise<Model[]> {
       if (!owner || typeof owner !== "string") {
@@ -81,89 +194,44 @@ export class ModelService extends BaseService {
 
       this.log("Getting models by owner", { owner });
       const models = await this.getModels();
-      return models.filter((model) => model.owned_by === owner);
+      return models.filter((model) => model.provider === owner);
    }
 
    /**
-    * Gets models by category
+    * Gets detailed capability information for a specific model.
+    *
+    * This method returns a list of all capabilities supported by the specified model.
+    *
+    * @param modelId - Unique identifier of the model to check
+    * @returns Promise resolving to array of capability names
+    * @throws Error if model is not found
     */
-   async getModelsByCategory(category: string): Promise<Model[]> {
-      if (!category || typeof category !== "string") {
-         throw new Error("Category is required");
-      }
-
-      this.log("Getting models by category", { category });
-      const models = await this.getModels();
-      return models.filter(
-         (model) =>
-            model.id.toLowerCase().includes(category.toLowerCase()) ||
-            model.owned_by.toLowerCase().includes(category.toLowerCase())
-      );
-   }
-
-   /**
-    * Gets models grouped by category
-    */
-   async getModelsByCategories(): Promise<ModelCategory[]> {
-      const models = await this.getModels();
-      const categories: Record<string, Model[]> = {};
-
-      for (const model of models) {
-         const owner = model.owned_by;
-         if (!categories[owner]) {
-            categories[owner] = [];
-         }
-         categories[owner].push(model);
-      }
-
-      return Object.entries(categories).map(([name, models]) => ({
-         name,
-         description: `Models from ${name}`,
-         models,
-      }));
-   }
-
-   /**
-    * Gets model capabilities
-    */
-   async getModelCapabilities(modelId: string): Promise<ModelCapability[]> {
+   async getModelCapabilities(modelId: string): Promise<string[]> {
       const model = await this.getModelById(modelId);
       if (!model) {
          throw new Error(`Model not found: ${modelId}`);
       }
-
-      const allCapabilities = [
-         { name: "chat", description: "Chat completions", supported: false },
-         {
-            name: "image-generation",
-            description: "Image generation",
-            supported: false,
-         },
-         {
-            name: "text-to-speech",
-            description: "Text to speech",
-            supported: false,
-         },
-         {
-            name: "embeddings",
-            description: "Text embeddings",
-            supported: false,
-         },
-         {
-            name: "audio-transcription",
-            description: "Audio transcription",
-            supported: false,
-         },
-      ];
-
-      return allCapabilities.map((capability) => ({
-         ...capability,
-         supported: model.capabilities?.includes(capability.name) || false,
-      }));
+      return model.capabilities || [];
    }
 
    /**
-    * Checks if a model supports a specific capability
+    * Checks if a specific model supports a given capability.
+    *
+    * This method provides a simple boolean check for whether a model
+    * supports a particular capability without returning detailed information.
+    *
+    * @param modelId - Unique identifier of the model to check
+    * @param capability - Capability to check for (e.g., "chat", "embeddings")
+    * @returns Promise resolving to boolean indicating capability support
+    *
+    * @example
+    * ```typescript
+    * const supportsChat = await client.models.supportsCapability(
+    *   "openai/gpt-4.1-mini",
+    *   "chat"
+    * );
+    * console.log("Supports chat:", supportsChat);
+    * ```
     */
    async supportsCapability(
       modelId: string,
@@ -178,25 +246,67 @@ export class ModelService extends BaseService {
    }
 
    /**
-    * Gets model pricing information
+    * Gets pricing information for a specific model.
+    *
+    * This method returns the input and output token pricing
+    * for the specified model, useful for cost estimation.
+    *
+    * @param modelId - Unique identifier of the model to get pricing for
+    * @returns Promise resolving to pricing object or null if not available
+    *
+    * @example
+    * ```typescript
+    * const pricing = await client.models.getModelPricing("openai/gpt-4.1-mini");
+    * if (pricing) {
+    *   console.log(`Input: $${pricing.input}/1K tokens`);
+    *   console.log(`Output: $${pricing.output}/1K tokens`);
+    * }
+    * ```
     */
    async getModelPricing(
       modelId: string
    ): Promise<{ input: number; output: number } | null> {
       const model = await this.getModelById(modelId);
-      return model?.pricing || null;
+      return model?.pricePerMillionTokens || null;
    }
 
    /**
-    * Gets model context length
+    * Gets the context length (maximum tokens) for a specific model.
+    *
+    * This method returns the maximum number of tokens that can be
+    * processed in a single request for the specified model.
+    *
+    * @param modelId - Unique identifier of the model to get context length for
+    * @returns Promise resolving to context length number or null if not available
+    *
+    * @example
+    * ```typescript
+    * const contextLength = await client.models.getModelContextLength("openai/gpt-4.1-mini");
+    * if (contextLength) {
+    *   console.log(`Context length: ${contextLength} tokens`);
+    * }
+    * ```
     */
    async getModelContextLength(modelId: string): Promise<number | null> {
       const model = await this.getModelById(modelId);
-      return model?.context_length || null;
+      return model?.parameters.context || null;
    }
 
    /**
-    * Searches models by name or description
+    * Searches models by name, owner, or description.
+    *
+    * This method performs a case-insensitive search across model IDs,
+    * owner names, and descriptions to find matching models.
+    *
+    * @param query - Search query string to match against model information
+    * @returns Promise resolving to array of Model objects matching the query
+    * @throws Error if query is not provided
+    *
+    * @example
+    * ```typescript
+    * const searchResults = await client.models.searchModels("gpt-4");
+    * console.log(`Found ${searchResults.length} models matching "gpt-4"`);
+    * ```
     */
    async searchModels(query: string): Promise<Model[]> {
       if (!query || typeof query !== "string") {
@@ -210,26 +320,24 @@ export class ModelService extends BaseService {
       return models.filter(
          (model) =>
             model.id.toLowerCase().includes(lowerQuery) ||
-            model.owned_by.toLowerCase().includes(lowerQuery) ||
+            model.provider.toLowerCase().includes(lowerQuery) ||
             model.description?.toLowerCase().includes(lowerQuery)
       );
    }
 
    /**
-    * Gets the latest models (most recently created)
-    */
-   async getLatestModels(limit: number = 10): Promise<Model[]> {
-      if (limit < 1 || limit > 100) {
-         throw new Error("Limit must be between 1 and 100");
-      }
-
-      this.log("Getting latest models", { limit });
-      const models = await this.getModels();
-      return models.sort((a, b) => b.created - a.created).slice(0, limit);
-   }
-
-   /**
-    * Validates model parameters
+    * Validates model parameters for correctness.
+    *
+    * This static method performs validation on model parameters
+    * to ensure they meet the API requirements before making requests.
+    *
+    * @param modelId - Model identifier to validate
+    * @throws Error if modelId is invalid
+    *
+    * @example
+    * ```typescript
+    * ModelService.validateModelParams("openai/gpt-4.1-mini");
+    * ```
     */
    static validateModelParams(modelId: string): void {
       if (!modelId || typeof modelId !== "string") {

@@ -117,6 +117,39 @@ export abstract class BaseService {
    }
 
    /**
+    * Makes a request to the API and returns the raw response body as Buffer (for audio, etc)
+    */
+   protected async makeRawRequest(
+      endpoint: string,
+      options: RequestInit = {},
+      requestOptions: RequestOptions = {}
+   ): Promise<{ buffer: Buffer; contentType: string }> {
+      const url = `${this.config.baseUrl}${endpoint}`;
+      const timeout = requestOptions.timeout || this.config.timeout;
+      const headers = {
+         "Content-Type": "application/json",
+         Authorization: `Bearer ${this.config.apiKey}`,
+         ...this.config.headers,
+         ...requestOptions.headers,
+      };
+
+      const requestOptions_: RequestInit = {
+         ...options,
+         headers,
+         signal: requestOptions.signal || AbortSignal.timeout(timeout),
+      };
+
+      const response = await this.fetchImpl(url, requestOptions_);
+      if (!response.ok) {
+         await this.handleErrorResponse(response);
+      }
+      const contentType =
+         response.headers.get("content-type") || "application/octet-stream";
+      const arrayBuffer = await response.arrayBuffer();
+      return { buffer: Buffer.from(arrayBuffer), contentType };
+   }
+
+   /**
     * Makes a request with retry logic
     */
    private async makeRequestWithRetry<T>(
