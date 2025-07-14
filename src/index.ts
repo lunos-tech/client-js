@@ -42,7 +42,7 @@ export type {
    EmbeddingData,
 } from "./types/embedding";
 
-export type { Model, ModelCapability, ModelCategory } from "./types/models";
+export type { Model } from "./types/models";
 
 export type {
    BaseRequest,
