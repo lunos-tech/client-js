@@ -79,11 +79,35 @@ Model discovery and information examples.
 
 -  Getting all available models
 -  Filtering by capabilities
--  Model search and categorization
--  Model information and pricing
+-  Model search
+-  Model information and pricing (using new fields: name, parameters, provider, pricePerMillionTokens, capabilities, status, description)
 -  Capability checking
--  Latest models
--  Model grouping
+
+**Model Object Structure:**
+
+Model objects now have the following structure:
+
+```
+{
+  "id": "deepseek/deepseek-r1-0528",
+  "name": "DeepSeek R1-0528",
+  "parameters": {
+    "context": 163840,
+    "max_output_tokens": 163840,
+    "size": "671B"
+  },
+  "provider": "deepseek",
+  "pricePerMillionTokens": {
+    "input": 0.45,
+    "output": 1.9
+  },
+  "capabilities": ["text-generation"],
+  "status": "available",
+  "description": "..."
+}
+```
+
+See the updated `model-examples.ts` for usage.
 
 ## Running Examples
 

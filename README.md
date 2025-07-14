@@ -511,9 +511,33 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 -  Documentation: [https://lunos.tech/docs](https://lunos.tech/docs)
 -  Issues: [GitHub Issues](https://github.com/lunos-tech/client-js/issues)
--  Email: support@lunos.tech
+-  Email: hello@lunos.tech
 
 ## Changelog
+
+### 1.3.0
+
+#### Breaking Changes
+
+-  **Model API Structure Overhaul:**
+   -  Update speech generation response logic.
+   -  Add PCM conversion to WAV util.
+   -  The `Model` type and all related API responses have changed.
+   -  All code, types, and examples now use the new model structure.
+   -  All references to model grouping, categories, and latest models have been removed.
+-  **Audio Transcription:**
+   -  All audio transcription functions and types have been removed (not available in Lunos).
+
+#### Improvements
+
+-  **Documentation:**
+   -  Updated all code examples and documentation to use the new model structure and fields.
+   -  Added a new section describing the model object structure with a sample JSON.
+   -  Updated all example files and their README to match the new API.
+-  **Validation:**
+   -  Voice validation for Google TTS now supports a comprehensive list of voices.
+-  **General:**
+   -  Improved error handling and parameter validation throughout the client.
 
 ### 1.2.0
 
