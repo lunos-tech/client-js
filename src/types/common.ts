@@ -3,6 +3,8 @@ export interface BaseRequest {
    model?: string;
    /** User identifier for tracking */
    user?: string;
+   /** Application identifier for analytics and usage tracking */
+   appId?: string;
 }
 
 export interface BaseResponse {

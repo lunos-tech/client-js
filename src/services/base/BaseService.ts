@@ -29,12 +29,18 @@ export abstract class BaseService {
    ): Promise<T> {
       const url = `${this.config.baseUrl}${endpoint}`;
       const timeout = requestOptions.timeout || this.config.timeout;
-      const headers = {
+      const headers: Record<string, string> = {
          "Content-Type": "application/json",
          Authorization: `Bearer ${this.config.apiKey}`,
          ...this.config.headers,
          ...requestOptions.headers,
       };
+
+      // Add X-App-ID header if appId is provided in request or config
+      const appId = requestOptions.appId || this.config.appId;
+      if (appId) {
+         headers["X-App-ID"] = appId;
+      }
 
       const requestOptions_: RequestInit = {
          ...options,
@@ -68,12 +74,18 @@ export abstract class BaseService {
    ): Promise<ReadableStream<Uint8Array>> {
       const url = `${this.config.baseUrl}${endpoint}`;
       const timeout = requestOptions.timeout || this.config.timeout;
-      const headers = {
+      const headers: Record<string, string> = {
          "Content-Type": "application/json",
          Authorization: `Bearer ${this.config.apiKey}`,
          ...this.config.headers,
          ...requestOptions.headers,
       };
+
+      // Add X-App-ID header if appId is provided in request or config
+      const appId = requestOptions.appId || this.config.appId;
+      if (appId) {
+         headers["X-App-ID"] = appId;
+      }
 
       const requestOptions_: RequestInit = {
          ...options,
@@ -126,12 +138,18 @@ export abstract class BaseService {
    ): Promise<{ buffer: Buffer; contentType: string }> {
       const url = `${this.config.baseUrl}${endpoint}`;
       const timeout = requestOptions.timeout || this.config.timeout;
-      const headers = {
+      const headers: Record<string, string> = {
          "Content-Type": "application/json",
          Authorization: `Bearer ${this.config.apiKey}`,
          ...this.config.headers,
          ...requestOptions.headers,
       };
+
+      // Add X-App-ID header if appId is provided in request or config
+      const appId = requestOptions.appId || this.config.appId;
+      if (appId) {
+         headers["X-App-ID"] = appId;
+      }
 
       const requestOptions_: RequestInit = {
          ...options,

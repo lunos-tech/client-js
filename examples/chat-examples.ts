@@ -15,6 +15,7 @@ async function chatExamples() {
       apiKey:
          process.env.LUNOS_API_KEY ||
          "sk-694f5c2bfc72921c7fd3628d69ed2ea7d4bb6c1aadd4e608",
+      appId: "chat-example-1",
    });
 
    console.log("🚀 Chat Service Examples");

@@ -34,7 +34,8 @@ export class AudioService extends BaseService {
     *   voice: "alloy",
     *   model: "openai/tts",
     *   response_format: "mp3",
-    *   speed: 1.0
+    *   speed: 1.0,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -45,6 +46,7 @@ export class AudioService extends BaseService {
       this.log("Generating audio", {
          input: request.input.substring(0, 50) + "...",
          voice: request.voice,
+         appId: request.appId,
       });
 
       // Always use makeRawRequest for audio
@@ -53,6 +55,9 @@ export class AudioService extends BaseService {
          {
             method: "POST",
             body: JSON.stringify(request),
+         },
+         {
+            appId: request.appId,
          }
       );
 
@@ -108,7 +113,8 @@ export class AudioService extends BaseService {
     *   voice: "alloy",
     *   model: "openai/tts",
     *   response_format: "mp3",
-    *   speed: 1.0
+    *   speed: 1.0,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -119,6 +125,7 @@ export class AudioService extends BaseService {
       response_format?: "mp3" | "opus" | "aac" | "flac";
       speed?: number;
       user?: string;
+      appId?: string;
    }): Promise<AudioGenerationResponse> {
       return this.generateAudio({
          input: options.text,
@@ -127,6 +134,7 @@ export class AudioService extends BaseService {
          response_format: options.response_format,
          speed: options.speed,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -145,7 +153,8 @@ export class AudioService extends BaseService {
     *   text: "This is a high-quality audio sample.",
     *   format: "flac",
     *   voice: "echo",
-    *   model: "openai/tts"
+    *   model: "openai/tts",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -156,6 +165,7 @@ export class AudioService extends BaseService {
       model?: string;
       speed?: number;
       user?: string;
+      appId?: string;
    }): Promise<AudioGenerationResponse> {
       return this.generateAudio({
          input: options.text,
@@ -164,6 +174,7 @@ export class AudioService extends BaseService {
          response_format: options.format,
          speed: options.speed,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -183,7 +194,8 @@ export class AudioService extends BaseService {
     *   text: "This is a slow speech sample.",
     *   speed: 0.5,
     *   voice: "fable",
-    *   model: "openai/tts"
+    *   model: "openai/tts",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -194,6 +206,7 @@ export class AudioService extends BaseService {
       model?: string;
       response_format?: "mp3" | "opus" | "aac" | "flac";
       user?: string;
+      appId?: string;
    }): Promise<AudioGenerationResponse> {
       if (options.speed < 0.25 || options.speed > 4.0) {
          throw new Error("Speed must be between 0.25 and 4.0");
@@ -206,6 +219,7 @@ export class AudioService extends BaseService {
          speed: options.speed,
          response_format: options.response_format,
          user: options.user,
+         appId: options.appId,
       });
    }
 

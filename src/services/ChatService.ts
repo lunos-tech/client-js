@@ -34,7 +34,8 @@ export class ChatService extends BaseService {
     *     { role: "user", content: "Hello! Can you tell me a short joke?" }
     *   ],
     *   max_tokens: 100,
-    *   fallback_model: "openai/gpt-4.1-mini"
+    *   fallback_model: "openai/gpt-4.1-mini",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -46,6 +47,7 @@ export class ChatService extends BaseService {
          model: request.model,
          messages: request.messages.length,
          fallback_model: request.fallback_model,
+         appId: request.appId,
       });
 
       return this.makeRequest<ChatCompletionResponse>(
@@ -56,6 +58,7 @@ export class ChatService extends BaseService {
          },
          {
             fallback_model: request.fallback_model,
+            appId: request.appId,
          }
       );
    }
@@ -229,7 +232,8 @@ export class ChatService extends BaseService {
     *   ],
     *   model: "openai/gpt-4.1-mini",
     *   max_tokens: 200,
-    *   temperature: 0.7
+    *   temperature: 0.7,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -246,6 +250,7 @@ export class ChatService extends BaseService {
       stream?: boolean;
       fallback_model?: string;
       user?: string;
+      appId?: string;
    }): Promise<ChatCompletionResponse> {
       return this.createCompletion({
          messages: options.messages,
@@ -260,6 +265,7 @@ export class ChatService extends BaseService {
          stream: options.stream,
          fallback_model: options.fallback_model,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -377,7 +383,8 @@ export class ChatService extends BaseService {
     *   systemMessage: "You are a helpful coding assistant.",
     *   userMessage: "Write a function to calculate fibonacci numbers",
     *   model: "openai/gpt-4.1-mini",
-    *   max_tokens: 400
+    *   max_tokens: 400,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -394,6 +401,7 @@ export class ChatService extends BaseService {
       n?: number;
       fallback_model?: string;
       user?: string;
+      appId?: string;
    }): Promise<ChatCompletionResponse> {
       return this.chat({
          messages: [
@@ -410,6 +418,7 @@ export class ChatService extends BaseService {
          n: options.n,
          fallback_model: options.fallback_model,
          user: options.user,
+         appId: options.appId,
       });
    }
 

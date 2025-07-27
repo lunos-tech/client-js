@@ -30,7 +30,8 @@ export class ImageService extends BaseService {
     *   prompt: "A beautiful sunset over mountains",
     *   model: "openai/dall-e-3",
     *   size: "1024x1024",
-    *   quality: "hd"
+    *   quality: "hd",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -41,6 +42,7 @@ export class ImageService extends BaseService {
       this.log("Generating image", {
          prompt: request.prompt,
          model: request.model,
+         appId: request.appId,
       });
 
       return this.makeRequest<ImageGenerationResponse>(
@@ -48,6 +50,9 @@ export class ImageService extends BaseService {
          {
             method: "POST",
             body: JSON.stringify(request),
+         },
+         {
+            appId: request.appId,
          }
       );
    }
@@ -140,7 +145,8 @@ export class ImageService extends BaseService {
     *   prompt: "A futuristic city skyline",
     *   model: "openai/dall-e-3",
     *   size: "1024x1024",
-    *   quality: "hd"
+    *   quality: "hd",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -154,6 +160,7 @@ export class ImageService extends BaseService {
       n?: number;
       seed?: number;
       user?: string;
+      appId?: string;
    }): Promise<ImageGenerationResponse> {
       return this.generateImage({
          prompt: options.prompt,
@@ -165,6 +172,7 @@ export class ImageService extends BaseService {
          n: options.n,
          seed: options.seed,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -184,7 +192,8 @@ export class ImageService extends BaseService {
     *   width: 1792,
     *   height: 1024,
     *   model: "openai/dall-e-3",
-    *   quality: "hd"
+    *   quality: "hd",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -199,6 +208,7 @@ export class ImageService extends BaseService {
       n?: number;
       seed?: number;
       user?: string;
+      appId?: string;
    }): Promise<ImageGenerationResponse> {
       return this.generateImage({
          prompt: options.prompt,
@@ -211,6 +221,7 @@ export class ImageService extends BaseService {
          n: options.n,
          seed: options.seed,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -269,7 +280,8 @@ export class ImageService extends BaseService {
     * const response = await client.image.generateBase64({
     *   prompt: "A digital art piece",
     *   model: "openai/dall-e-3",
-    *   size: "1024x1024"
+    *   size: "1024x1024",
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -282,6 +294,7 @@ export class ImageService extends BaseService {
       n?: number;
       seed?: number;
       user?: string;
+      appId?: string;
    }): Promise<ImageGenerationResponse> {
       return this.generateImage({
          prompt: options.prompt,
@@ -293,6 +306,7 @@ export class ImageService extends BaseService {
          n: options.n,
          seed: options.seed,
          user: options.user,
+         appId: options.appId,
       });
    }
 

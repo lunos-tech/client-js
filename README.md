@@ -43,6 +43,7 @@ import { LunosClient } from "@lunos/client";
 const client = new LunosClient({
    apiKey: "your-api-key-here",
    baseUrl: "https://api.lunos.tech",
+   appId: "my-application", // Optional: for analytics and usage tracking
 });
 
 // Chat completion
@@ -53,6 +54,48 @@ const response = await client.chat.createCompletion({
 
 console.log(response.choices[0].message.content);
 ```
+
+### Application ID (App ID) for Analytics
+
+The client supports an optional `appId` parameter for analytics and usage tracking. This helps track which applications are using the API and provides insights into usage patterns.
+
+```typescript
+// Set default appId for all requests
+const client = new LunosClient({
+   apiKey: "your-api-key",
+   appId: "my-application", // Default appId for all requests
+});
+
+// Override appId for specific requests
+const response = await client.chat.createCompletion({
+   model: "openai/gpt-4.1",
+   messages: [{ role: "user", content: "Hello!" }],
+   appId: "chat-feature", // Specific appId for this request
+});
+
+// AppId is supported across all AI generation endpoints
+const imageResponse = await client.image.generate({
+   prompt: "A beautiful sunset",
+   model: "openai/dall-e-3",
+   appId: "image-generator",
+});
+
+const audioResponse = await client.audio.textToSpeech({
+   text: "Hello world",
+   voice: "alloy",
+   appId: "audio-service",
+});
+
+const embedding = await client.embedding.embedText(
+   "Sample text",
+   "openai/text-embedding-3-small",
+   "embedding-tool"
+);
+```
+
+The `appId` will be included as the `X-App-ID` header in all requests and stored in the `query_history` table for analytics and usage tracking per application.
+
+````
 
 ## API Reference
 
@@ -68,6 +111,7 @@ const config: Partial<LunosConfig> = {
    retries: 3,
    retryDelay: 1000,
    fallback_model: "openai/gpt-4o", // Optional fallback model
+   appId: "my-application", // Optional: for analytics and usage tracking
    debug: false,
    headers: {
       "Custom-Header": "value",
@@ -75,7 +119,7 @@ const config: Partial<LunosConfig> = {
 };
 
 const client = new LunosClient(config);
-```
+````
 
 ### Chat Completions
 
@@ -86,6 +130,7 @@ const response = await client.chat.createCompletion({
    messages: [{ role: "user", content: "Write a short story about a robot." }],
    temperature: 0.7,
    max_tokens: 500,
+   appId: "chat-feature", // Optional: override default appId for this request
 });
 
 // Streaming chat completion with callback

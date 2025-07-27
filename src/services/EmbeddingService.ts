@@ -27,7 +27,8 @@ export class EmbeddingService extends BaseService {
     *   input: "This is a sample text for embedding.",
     *   model: "openai/text-embedding-3-small",
     *   encoding_format: "float",
-    *   dimensions: 1536
+    *   dimensions: 1536,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -39,12 +40,19 @@ export class EmbeddingService extends BaseService {
          inputType: typeof request.input,
          inputLength: Array.isArray(request.input) ? request.input.length : 1,
          model: request.model,
+         appId: request.appId,
       });
 
-      return this.makeRequest<EmbeddingResponse>("/v1/embeddings", {
-         method: "POST",
-         body: JSON.stringify(request),
-      });
+      return this.makeRequest<EmbeddingResponse>(
+         "/v1/embeddings",
+         {
+            method: "POST",
+            body: JSON.stringify(request),
+         },
+         {
+            appId: request.appId,
+         }
+      );
    }
 
    /**
@@ -62,7 +70,8 @@ export class EmbeddingService extends BaseService {
     *   input: "This is a sample text for embedding.",
     *   model: "openai/text-embedding-3-small",
     *   encoding_format: "float",
-    *   dimensions: 1536
+    *   dimensions: 1536,
+    *   appId: "my-app"
     * });
     * ```
     */
@@ -72,6 +81,7 @@ export class EmbeddingService extends BaseService {
       encoding_format?: "float" | "base64";
       dimensions?: number;
       user?: string;
+      appId?: string;
    }): Promise<EmbeddingResponse> {
       return this.createEmbedding({
          input: options.input,
@@ -79,6 +89,7 @@ export class EmbeddingService extends BaseService {
          encoding_format: options.encoding_format,
          dimensions: options.dimensions,
          user: options.user,
+         appId: options.appId,
       });
    }
 
@@ -90,6 +101,7 @@ export class EmbeddingService extends BaseService {
     *
     * @param text - Single text string to embed
     * @param model - Optional model identifier for embedding generation
+    * @param appId - Optional application identifier for analytics
     * @returns Promise resolving to number array representing the embedding vector
     * @throws Error if embedding generation fails or response is invalid
     *
@@ -97,13 +109,18 @@ export class EmbeddingService extends BaseService {
     * ```typescript
     * const embedding = await client.embedding.embedText(
     *   "This is a sample text for embedding.",
-    *   "openai/text-embedding-3-small"
+    *   "openai/text-embedding-3-small",
+    *   "my-app"
     * );
     * console.log("Embedding dimensions:", embedding.length);
     * ```
     */
-   async embedText(text: string, model?: string): Promise<number[]> {
-      const response = await this.embed({ input: text, model });
+   async embedText(
+      text: string,
+      model?: string,
+      appId?: string
+   ): Promise<number[]> {
+      const response = await this.embed({ input: text, model, appId });
       return response.data[0]?.embedding || [];
    }
 
@@ -115,6 +132,7 @@ export class EmbeddingService extends BaseService {
     *
     * @param texts - Array of text strings to embed
     * @param model - Optional model identifier for embedding generation
+    * @param appId - Optional application identifier for analytics
     * @returns Promise resolving to 2D number array with embedding vectors
     * @throws Error if embedding generation fails or response is invalid
     *
@@ -124,12 +142,16 @@ export class EmbeddingService extends BaseService {
     *   "First text for embedding",
     *   "Second text for embedding",
     *   "Third text for embedding"
-    * ], "openai/text-embedding-3-small");
+    * ], "openai/text-embedding-3-small", "my-app");
     * console.log("Number of embeddings:", embeddings.length);
     * ```
     */
-   async embedMultiple(texts: string[], model?: string): Promise<number[][]> {
-      const response = await this.embed({ input: texts, model });
+   async embedMultiple(
+      texts: string[],
+      model?: string,
+      appId?: string
+   ): Promise<number[][]> {
+      const response = await this.embed({ input: texts, model, appId });
       return response.data.map((item) => item.embedding);
    }
 

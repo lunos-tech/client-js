@@ -7,6 +7,7 @@ export const DEFAULT_CONFIG: LunosConfig = {
    retries: 3,
    retryDelay: 1000,
    fallback_model: undefined,
+   appId: "Unknown",
    debug: false,
 };
 
