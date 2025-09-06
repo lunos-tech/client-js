@@ -11,6 +11,7 @@ Official TypeScript client library for the [Lunos AI API](https://lunos.tech) - 
 -  🤖 **Multi-Provider Support**: Access OpenAI, Anthropic, Google, and other AI models through a single API
 -  💬 **Chat Completions**: Full support for chat conversations with streaming
 -  🎨 **Image Generation**: Create images with DALL-E, Midjourney, and other models
+-  🎬 **Video Generation**: Generate cinematic-quality videos with Google Veo 3.0
 -  🔊 **Audio Generation**: Text-to-speech with multiple voices and formats
 -  📊 **Embeddings**: Generate and work with text embeddings
 -  🔍 **Model Discovery**: Browse and search available models
@@ -86,6 +87,13 @@ const audioResponse = await client.audio.textToSpeech({
    appId: "audio-service",
 });
 
+const videoResponse = await client.video.generate({
+   prompt: "A beautiful sunset over mountains",
+   model: "google/veo-3.0-generate-preview",
+   aspectRatio: "16:9",
+   appId: "video-generator",
+});
+
 const embedding = await client.embedding.embedText(
    "Sample text",
    "openai/text-embedding-3-small",
@@ -107,7 +115,7 @@ import { LunosClient, LunosConfig } from "@lunos/client";
 const config: Partial<LunosConfig> = {
    apiKey: "your-api-key",
    baseUrl: "https://api.lunos.tech",
-   timeout: 30000,
+   timeout: 60000,
    retries: 3,
    retryDelay: 1000,
    fallback_model: "openai/gpt-4o", // Optional fallback model
@@ -327,6 +335,74 @@ const transcription = await client.audio.transcribeFromFile(
 );
 ```
 
+### Video Generation
+
+Generate cinematic-quality videos using Google Veo 3.0 with customizable aspect ratios, negative prompts, and output formats.
+
+```typescript
+// Basic video generation
+const response = await client.video.generateVideo({
+   model: "google/veo-3.0-generate-preview",
+   prompt: "A cinematic shot of a majestic lion in the savannah.",
+   parameters: {
+      aspectRatio: "16:9",
+      negativePrompt: "cartoon, drawing, low quality",
+   },
+   response_format: "mp4",
+   appId: "my-video-app",
+});
+
+console.log("Operation ID:", response.id);
+console.log("Status:", response.status);
+
+// Check video generation status
+const status = await client.video.getVideoStatus(response.id, "my-video-app");
+
+if (status.status === "completed") {
+   console.log("Video URL:", status.video_url);
+}
+
+// Generate and wait for completion
+const result = await client.video.generateAndWait(
+   {
+      prompt: "A beautiful sunset over mountains with birds flying",
+      aspectRatio: "16:9",
+      negativePrompt: "cartoon, animation, low quality",
+   },
+   10000,
+   300000
+); // Poll every 10 seconds, max wait 5 minutes
+
+console.log("Video URL:", result.video_url);
+
+// Convenience methods
+const response = await client.video.generate({
+   prompt: "A futuristic city skyline at night",
+   model: "google/veo-3.0-generate-preview",
+   aspectRatio: "16:9",
+   negativePrompt: "cartoon, low quality, blurry",
+});
+
+const widescreenVideo = await client.video.generateWidescreen({
+   prompt: "A cinematic car chase scene through a busy city",
+   negativePrompt: "cartoon, animation, low quality",
+});
+
+const mp4Video = await client.video.generateMP4({
+   prompt: "A peaceful forest scene with birds chirping",
+   aspectRatio: "16:9",
+});
+```
+
+**Video Generation Features:**
+
+-  **Google Veo 3.0 Support**: Generate high-quality cinematic videos
+-  **Aspect Ratio Control**: Currently supports 16:9 widescreen format
+-  **Negative Prompts**: Specify what to avoid in the generated video
+-  **Async Operations**: Long-running video generation with status polling
+-  **Multiple Formats**: Support for MP4 output format
+-  **Convenience Methods**: Simplified interfaces for common use cases
+
 ### Embeddings
 
 ```typescript
@@ -363,6 +439,7 @@ const chatModels = await client.models.getChatModels();
 const imageModels = await client.models.getImageModels();
 const audioModels = await client.models.getAudioModels();
 const embeddingModels = await client.models.getEmbeddingModels();
+const videoModels = await client.models.getVideoModels();
 
 // Get specific model
 const gpt4 = await client.models.getModelById("openai/gpt-4.1");
@@ -535,6 +612,8 @@ import type {
    ChatCompletionResponse,
    ImageGenerationRequest,
    AudioGenerationRequest,
+   VideoGenerationRequest,
+   VideoGenerationResponse,
    EmbeddingRequest,
    Model,
 } from "@lunos/client";
@@ -559,6 +638,24 @@ MIT License - see [LICENSE](LICENSE) for details.
 -  Email: hello@lunos.tech
 
 ## Changelog
+
+### 1.4.0
+
+#### New Features
+
+-  **Video Generation**: Added comprehensive video generation support with Google Veo 3.0
+   -  Generate cinematic-quality videos from text prompts
+   -  Support for 16:9 aspect ratio and MP4 output format
+   -  Negative prompts to avoid unwanted elements
+   -  Async operations with status polling
+   -  Multiple convenience methods for different use cases
+   -  Full TypeScript support with comprehensive type definitions
+
+#### Improvements
+
+-  **Default Timeout**: Increased default timeout from 30 seconds to 60 seconds for all services
+-  **Documentation**: Updated README with video generation examples and API reference
+-  **Examples**: Added comprehensive video generation examples in `examples/video-examples.ts`
 
 ### 1.3.0
 
