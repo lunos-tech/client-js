@@ -5,6 +5,7 @@ import { ImageService } from "../services/ImageService";
 import { AudioService } from "../services/AudioService";
 import { EmbeddingService } from "../services/EmbeddingService";
 import { ModelService } from "../services/ModelService";
+import { VideoService } from "../services/VideoService";
 import { ValidationUtils } from "../utils/validation";
 
 export class LunosClient {
@@ -14,6 +15,7 @@ export class LunosClient {
    private audioService: AudioService;
    private embeddingService: EmbeddingService;
    private modelService: ModelService;
+   private videoService: VideoService;
 
    constructor(config: Partial<LunosConfig> = {}) {
       this.config = mergeConfig(config);
@@ -44,6 +46,7 @@ export class LunosClient {
       this.audioService = new AudioService(this.config);
       this.embeddingService = new EmbeddingService(this.config);
       this.modelService = new ModelService(this.config);
+      this.videoService = new VideoService(this.config);
    }
 
    /**
@@ -79,6 +82,13 @@ export class LunosClient {
     */
    get models(): ModelService {
       return this.modelService;
+   }
+
+   /**
+    * Gets the video service
+    */
+   get video(): VideoService {
+      return this.videoService;
    }
 
    /**

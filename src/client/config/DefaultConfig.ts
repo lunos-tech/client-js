@@ -3,7 +3,7 @@ import { LunosConfig } from "./ClientConfig";
 export const DEFAULT_CONFIG: LunosConfig = {
    baseUrl: "https://api.lunos.tech",
    apiKey: "",
-   timeout: 30000,
+   timeout: 60000,
    retries: 3,
    retryDelay: 1000,
    fallback_model: undefined,

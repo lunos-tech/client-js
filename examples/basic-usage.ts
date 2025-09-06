@@ -10,6 +10,7 @@ import { LunosClient } from "../src/index";
  * - audio-examples.ts: Text-to-speech and transcription examples
  * - embedding-examples.ts: Text embedding and similarity examples
  * - model-examples.ts: Model discovery and information examples
+ * - video-examples.ts: Video generation examples
  */
 
 async function basicUsage() {
@@ -31,6 +32,7 @@ async function basicUsage() {
       console.log("   • Audio Service: Text-to-speech and transcription");
       console.log("   • Embedding Service: Text vectorization and similarity");
       console.log("   • Model Service: Model discovery and information");
+      console.log("   • Video Service: Video generation from text prompts");
       console.log("");
 
       // Simple chat example
@@ -95,6 +97,24 @@ async function basicUsage() {
       console.log(`   Image models: ${imageModels.length}`);
       console.log("");
 
+      // Simple video example
+      console.log("🎬 Quick Video Example:");
+      try {
+         const videoResponse = await client.video.generate({
+            prompt: "A beautiful sunset over mountains",
+            model: "google/veo-3.0-generate-preview",
+            aspectRatio: "16:9",
+            negativePrompt: "cartoon, low quality",
+         });
+         console.log(
+            `   Video generation started with operation ID: ${videoResponse.id}`
+         );
+         console.log(`   Status: ${videoResponse.status}`);
+      } catch (error) {
+         console.log(`   Note: Video generation requires specific API access`);
+      }
+      console.log("");
+
       console.log("✅ Basic usage completed successfully!");
       console.log("\n📚 For detailed examples, run:");
       console.log("   npm run example:chat     # Chat examples");
@@ -102,6 +122,7 @@ async function basicUsage() {
       console.log("   npm run example:audio    # Audio examples");
       console.log("   npm run example:embedding # Embedding examples");
       console.log("   npm run example:model    # Model examples");
+      console.log("   npm run example:video    # Video examples");
    } catch (error) {
       console.error("❌ Error during basic usage:", error);
       process.exit(1);

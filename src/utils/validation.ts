@@ -3,6 +3,7 @@ import { ChatCompletionRequest } from "../types/chat";
 import { ImageGenerationRequest } from "../types/image";
 import { AudioGenerationRequest } from "../types/audio";
 import { EmbeddingRequest } from "../types/embedding";
+import { VideoGenerationRequest } from "../types/video";
 
 export class ValidationUtils {
    /**
@@ -332,6 +333,42 @@ export class ValidationUtils {
       ) {
          throw new ValidationError(
             "Retry delay must be a number between 100 and 10000 milliseconds"
+         );
+      }
+   }
+
+   /**
+    * Validates a video generation request
+    */
+   static validateVideoGenerationRequest(
+      request: VideoGenerationRequest
+   ): void {
+      if (
+         !request.prompt ||
+         typeof request.prompt !== "string" ||
+         request.prompt.trim().length === 0
+      ) {
+         throw new ValidationError("Prompt is required and cannot be empty");
+      }
+
+      if (
+         !request.model ||
+         typeof request.model !== "string" ||
+         request.model.trim().length === 0
+      ) {
+         throw new ValidationError("Model is required and cannot be empty");
+      }
+
+      if (
+         request.parameters?.aspectRatio &&
+         request.parameters.aspectRatio !== "16:9"
+      ) {
+         throw new ValidationError("Aspect ratio must be '16:9' or undefined");
+      }
+
+      if (request.response_format && request.response_format !== "mp4") {
+         throw new ValidationError(
+            "Response format must be 'mp4' or undefined"
          );
       }
    }

@@ -7,6 +7,7 @@ export { ImageService } from "./services/ImageService";
 export { AudioService } from "./services/AudioService";
 export { EmbeddingService } from "./services/EmbeddingService";
 export { ModelService } from "./services/ModelService";
+export { VideoService } from "./services/VideoService";
 
 // Configuration
 export type { LunosConfig, RequestOptions } from "./client/config/ClientConfig";
@@ -35,6 +36,14 @@ export type {
    AudioTranscriptionRequest,
    AudioTranscriptionResponse,
 } from "./types/audio";
+
+export type {
+   VideoGenerationRequest,
+   VideoGenerationResponse,
+   VideoGenerationStatus,
+   VideoGenerationParameters,
+   VideoGenerationOptions,
+} from "./types/video";
 
 export type {
    EmbeddingRequest,

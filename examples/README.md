@@ -83,6 +83,22 @@ Model discovery and information examples.
 -  Model information and pricing (using new fields: name, parameters, provider, pricePerMillionTokens, capabilities, status, description)
 -  Capability checking
 
+### 🎬 `video-examples.ts`
+
+Video generation examples using Google Veo 3.0 for cinematic-quality video creation.
+
+**What it demonstrates:**
+
+-  Basic video generation with prompts
+-  Convenience methods for simplified usage
+-  Generate and wait functionality
+-  Widescreen video generation (16:9 aspect ratio)
+-  MP4 format video generation
+-  Advanced parameter configuration
+-  Error handling and validation
+-  Batch video generation
+-  Status polling and monitoring
+
 **Model Object Structure:**
 
 Model objects now have the following structure:
@@ -144,6 +160,9 @@ npm run example:embedding
 
 # Model examples
 npm run example:model
+
+# Video examples
+npm run example:video
 ```
 
 ### Running All Examples
